@@ -27,6 +27,6 @@ Change log
 - Ionic list, https://ionicframework.com/docs/api/list
 - React effect hook, https://reactjs.org/docs/hooks-effect.html
 
-06 Use reducers
+06 Use reducers to manage complex behaviour
 
 - React reducer hook, https://reactjs.org/docs/hooks-reference.html#usereducer
