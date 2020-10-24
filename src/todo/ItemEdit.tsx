@@ -5,6 +5,8 @@ import {
   IonContent,
   IonHeader,
   IonInput,
+  IonItem,
+  IonLabel,
   IonLoading,
   IonPage,
   IonTitle,
@@ -19,25 +21,31 @@ const log = getLogger('ItemEdit');
 
 interface ItemEditProps extends RouteComponentProps<{
   id?: string;
-}> {}
+}> { }
 
 const ItemEdit: React.FC<ItemEditProps> = ({ history, match }) => {
-  const { items, saving, savingError, saveItem } = useContext(ItemContext);
-  const [text, setText] = useState('');
+  const { items, saving, savingError, saveItem, deleteItem } = useContext(ItemContext);
+  const [title, setTitle] = useState('');
+  const [pages, setPages] = useState(0);
   const [item, setItem] = useState<ItemProps>();
   useEffect(() => {
     log('useEffect');
     const routeId = match.params.id || '';
-    const item = items?.find(it => it.id === routeId);
+    const item = items?.find(it => it._id === routeId);
     setItem(item);
     if (item) {
-      setText(item.text);
+      setTitle(item.title);
+      setPages(item.pages);
     }
   }, [match.params.id, items]);
   const handleSave = () => {
-    const editedItem = item ? { ...item, text } : { text };
+    const editedItem = item ? { ...item, title, pages } : { title, pages };
     saveItem && saveItem(editedItem).then(() => history.goBack());
   };
+  const handleDelete = () => {
+    const editedItem = item ? { ...item, title, pages } : { title, pages }
+    deleteItem && deleteItem(editedItem).then(() => history.goBack())
+  }
   log('render');
   return (
     <IonPage>
@@ -48,11 +56,21 @@ const ItemEdit: React.FC<ItemEditProps> = ({ history, match }) => {
             <IonButton onClick={handleSave}>
               Save
             </IonButton>
+            <IonButton onClick={handleDelete}>
+              Delete
+            </IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <IonInput value={text} onIonChange={e => setText(e.detail.value || '')} />
+        <IonItem>
+          <IonLabel>Title: </IonLabel>
+          <IonInput value={title} onIonChange={e => setTitle(e.detail.value || '')} />
+        </IonItem>
+        <IonItem>
+          <IonLabel>Pages: </IonLabel>
+          <IonInput value={pages} onIonChange={e => setPages(Number(e.detail.value))} />
+        </IonItem>
         <IonLoading isOpen={saving} />
         {savingError && (
           <div>{savingError.message || 'Failed to save item'}</div>
