@@ -2,7 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import {
   IonButton,
   IonButtons,
+  IonCheckbox,
   IonContent,
+  IonDatetime,
   IonHeader,
   IonInput,
   IonItem,
@@ -27,6 +29,8 @@ const ItemEdit: React.FC<ItemEditProps> = ({ history, match }) => {
   const { items, saving, savingError, saveItem, deleteItem } = useContext(ItemContext);
   const [title, setTitle] = useState('');
   const [pages, setPages] = useState(0);
+  const [sold, setSold] = useState(false)
+  const [releaseDate, setReleaseDate] = useState('')
   const [item, setItem] = useState<ItemProps>();
   useEffect(() => {
     log('useEffect');
@@ -36,14 +40,16 @@ const ItemEdit: React.FC<ItemEditProps> = ({ history, match }) => {
     if (item) {
       setTitle(item.title);
       setPages(item.pages);
+      setSold(item.sold)
+      setReleaseDate(item.releaseDate)
     }
   }, [match.params.id, items]);
   const handleSave = () => {
-    const editedItem = item ? { ...item, title, pages } : { title, pages };
+    const editedItem = item ? { ...item, title, pages, sold, releaseDate } : { title, pages, sold, releaseDate };
     saveItem && saveItem(editedItem).then(() => history.goBack());
   };
   const handleDelete = () => {
-    const editedItem = item ? { ...item, title, pages } : { title, pages }
+    const editedItem = item ? { ...item, title, pages, sold, releaseDate } : { title, pages, sold, releaseDate }
     deleteItem && deleteItem(editedItem).then(() => history.goBack())
   }
   log('render');
@@ -71,6 +77,14 @@ const ItemEdit: React.FC<ItemEditProps> = ({ history, match }) => {
           <IonLabel>Pages: </IonLabel>
           <IonInput value={pages} onIonChange={e => setPages(Number(e.detail.value))} />
         </IonItem>
+        <IonItem>
+          <IonLabel>Sold: </IonLabel>
+          <IonCheckbox
+            checked={sold}
+            onIonChange={(e) => setSold(e.detail.checked)}
+          />
+        </IonItem>
+        <IonDatetime value={releaseDate} onIonChange={e => setReleaseDate(e.detail.value?.split("T")[0]!)}></IonDatetime>
         <IonLoading isOpen={saving} />
         {savingError && (
           <div>{savingError.message || 'Failed to save item'}</div>
