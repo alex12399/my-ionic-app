@@ -1,4 +1,4 @@
-export interface ItemProps {
+export interface BookProps {
   _id?: string;
   title: string;
   pages: number;

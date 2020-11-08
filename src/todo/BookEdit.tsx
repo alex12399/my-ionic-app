@@ -15,42 +15,42 @@ import {
   IonToolbar
 } from '@ionic/react';
 import { getLogger } from '../core';
-import { ItemContext } from './ItemProvider';
+import { BookContext } from './BookProvider';
 import { RouteComponentProps } from 'react-router';
-import { ItemProps } from './ItemProps';
+import { BookProps } from './BookProps';
 
 const log = getLogger('ItemEdit');
 
-interface ItemEditProps extends RouteComponentProps<{
+interface BookEditProps extends RouteComponentProps<{
   id?: string;
 }> { }
 
-const ItemEdit: React.FC<ItemEditProps> = ({ history, match }) => {
-  const { items, saving, savingError, saveItem, deleteItem } = useContext(ItemContext);
+const BookEdit: React.FC<BookEditProps> = ({ history, match }) => {
+  const { books, saving, savingError, saveBook, deleteBook } = useContext(BookContext);
   const [title, setTitle] = useState('');
   const [pages, setPages] = useState(0);
   const [sold, setSold] = useState(false)
   const [releaseDate, setReleaseDate] = useState('')
-  const [item, setItem] = useState<ItemProps>();
+  const [book, setBook] = useState<BookProps>();
   useEffect(() => {
     log('useEffect');
     const routeId = match.params.id || '';
-    const item = items?.find(it => it._id === routeId);
-    setItem(item);
-    if (item) {
-      setTitle(item.title);
-      setPages(item.pages);
-      setSold(item.sold)
-      setReleaseDate(item.releaseDate)
+    const book = books?.find(it => it._id === routeId);
+    setBook(book);
+    if (book) {
+      setTitle(book.title);
+      setPages(book.pages);
+      setSold(book.sold)
+      setReleaseDate(book.releaseDate)
     }
-  }, [match.params.id, items]);
+  }, [match.params.id, books]);
   const handleSave = () => {
-    const editedItem = item ? { ...item, title, pages, sold, releaseDate } : { title, pages, sold, releaseDate };
-    saveItem && saveItem(editedItem).then(() => history.goBack());
+    const editedBook = book ? { ...book, title, pages, sold, releaseDate } : { title, pages, sold, releaseDate };
+    saveBook && saveBook(editedBook).then(() => history.goBack());
   };
   const handleDelete = () => {
-    const editedItem = item ? { ...item, title, pages, sold, releaseDate } : { title, pages, sold, releaseDate }
-    deleteItem && deleteItem(editedItem).then(() => history.goBack())
+    const deletedBook = book ? { ...book, title, pages, sold, releaseDate } : { title, pages, sold, releaseDate }
+    deleteBook && deleteBook(deletedBook).then(() => history.goBack())
   }
   log('render');
   return (
@@ -84,14 +84,17 @@ const ItemEdit: React.FC<ItemEditProps> = ({ history, match }) => {
             onIonChange={(e) => setSold(e.detail.checked)}
           />
         </IonItem>
-        <IonDatetime value={releaseDate} onIonChange={e => setReleaseDate(e.detail.value?.split("T")[0]!)}></IonDatetime>
+        <IonItem>
+          <IonLabel>Release Date: </IonLabel>
+          <IonDatetime value={releaseDate} onIonChange={e => setReleaseDate(e.detail.value?.split("T")[0]!)}></IonDatetime>
+        </IonItem>
         <IonLoading isOpen={saving} />
         {savingError && (
-          <div>{savingError.message || 'Failed to save item'}</div>
+          <div>{savingError.message || 'Failed to save book'}</div>
         )}
       </IonContent>
     </IonPage>
   );
 };
 
-export default ItemEdit;
+export default BookEdit;
