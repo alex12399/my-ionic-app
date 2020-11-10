@@ -67,8 +67,11 @@ const BookList: React.FC<RouteComponentProps> = ({ history }) => {
   }, [filter]);
 
   useEffect(() => {
-    if (search && books) {
-      setBooksShow(books.filter((book) => book.title.startsWith(search)));
+    if (!search && books) {
+      setBooksShow(books)
+    }
+    else if (search && books) {
+      setBooksShow(books.filter((book) => book.title.toLowerCase().includes(search)));
     }
   }, [search]);
   return (
