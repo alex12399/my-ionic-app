@@ -4,4 +4,6 @@ export interface BookProps {
   pages: number;
   sold: boolean
   releaseDate: string
+  version: number
+  status: number
 }

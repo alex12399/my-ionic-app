@@ -24,15 +24,17 @@ import { getLogger } from '../core';
 import { BookContext } from './BookProvider';
 import { AuthContext } from '../auth';
 import { BookProps } from './BookProps';
+import { useNetwork } from '../utils/useNetwork'
 
 
 const log = getLogger('BookList');
 
 const BookList: React.FC<RouteComponentProps> = ({ history }) => {
-  const { books, fetching, fetchingError } = useContext(BookContext);
+  const { books, fetching, fetchingError, updateServer } = useContext(BookContext);
   const [disableInfiniteScroll, setDisableInfiniteScroll] = useState<boolean>(
     false
   );
+  const { networkStatus } = useNetwork()
   const [filter, setFilter] = useState<string | undefined>(undefined);
   const [search, setSearch] = useState<string>("");
   const [pos, setPos] = useState(3);
@@ -43,6 +45,11 @@ const BookList: React.FC<RouteComponentProps> = ({ history }) => {
     logout?.();
     return <Redirect to={{ pathname: "/login" }} />;
   };
+  useEffect(() => {
+    if (networkStatus.connected === true) {
+      updateServer && updateServer()
+    }
+  }, [networkStatus.connected])
   useEffect(() => {
     if (books?.length) {
       setBooksShow(books.slice(0, 3));
@@ -80,6 +87,7 @@ const BookList: React.FC<RouteComponentProps> = ({ history }) => {
         <IonToolbar>
           <IonTitle>Book List</IonTitle>
           <IonButton onClick={handleLogout}>Logout</IonButton>
+          <div>Network is {networkStatus.connected ? 'online' : 'offline' }</div>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -110,6 +118,8 @@ const BookList: React.FC<RouteComponentProps> = ({ history }) => {
                 pages={book.pages}
                 sold={book.sold}
                 releaseDate={book.releaseDate}
+                status = {book.status}
+                version = {book.version}
                 onEdit={(id) => history.push(`/book/${id}`)}
               />
             );
