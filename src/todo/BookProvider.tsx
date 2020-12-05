@@ -81,7 +81,7 @@ const reducer: (state: BooksState, action: ActionProps) => BooksState =
         const books = [...(state.books || [])];
         const book = payload.book;
         if (book._id !== undefined) {
-          log("ITEM in Car Provider: " + JSON.stringify(book));
+          log("ITEM in Book Provider: " + JSON.stringify(book));
           const index = books.findIndex((it) => it._id === book._id);
           if (index === -1) {
             books.splice(0, 0, book);
@@ -289,10 +289,10 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
       if (book._id === undefined) {
         book._id = random_id();
         book.status = 1;
-        alert("Car saved locally");
+        alert("Book saved locally");
       } else {
         book.status = 2;
-        alert("Car updated locally");
+        alert("Book updated locally");
       }
       await Storage.set({
         key: book._id,
@@ -321,7 +321,7 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
         key: JSON.stringify(book._id),
         value: JSON.stringify(book),
       });
-      alert("Car deleted locally");
+      alert("Book deleted locally");
       dispatch({ type: DELETE_BOOK_SUCCEEDED, payload: { book: book } });
       // log("delete failed");
       // dispatch({ type: DELETE_BOOK_FAILED, payload: { error } });
